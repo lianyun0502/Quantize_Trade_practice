@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "quantize-trade-practice"
+version = "0.1.0"
+description = ""
+authors = ["LianYun-Li <lee64690502@gmail.com>"]
+readme = "README.md"
+packages = [{include = "quantize_trade_practice"}]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+shioaji = "^1.1.0"
+python-dotenv = "^1.0.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
