@@ -1,6 +1,6 @@
 import pprint
 import shioaji as sj
-from shioaji import TickFOPv1, Exchange
+from shioaji import TickFOPv1, Exchange, TickSTKv1
 import os
 from dotenv import load_dotenv #從dotenv模組中匯入load_dotenv這個function
 
@@ -17,36 +17,37 @@ accounts = api.list_accounts()
 pprint.pp(accounts)
 
 result = api.activate_ca(
-    ca_path=r'E:/桌面/憑證/ekey/551/A127016469/S/Sinopac.pfx',
-    ca_passwd="A127016469",
-    person_id="A127016469",
+    ca_path=r'./憑證/ekey/551/A127016469/S/Sinopac.pfx',
+    ca_passwd=os.getenv('CA_PASSWORD'),
+    person_id=os.getenv('PERSON_ID'),
 )
 
 print(f'Active CA : {result}')
 
 
-# print(api.Contracts.Stocks["2890"])
-
-# print(api.Contracts.Futures["TXFA2"])
-
-# print(api.Contracts.Options["TXO18000R3"])
-
 @api.quote.on_event
 def event_callback(resp_code: int, event_code: int, info: str, event: str):
     print(f'Event code: {event_code} | Event: {event}')
-    print(f'Info: {info}')
+    # print(f'Info: {info}')
 
 
-@api.on_tick_fop_v1()
-def quote_callback(exchange:Exchange, tick:TickFOPv1):
-    print(f"Exchange: {exchange}, Tick: {tick}")
+def quote_callback(exchange:Exchange, tick:TickSTKv1):
+    print('--------------')
+    print(f"Exchange: {exchange}\nTick: {tick}")
+    pass
 
-api.quote.subscribe(api.Contracts.Stocks["2330"], quote_type="tick")
-api.quote.subscribe(
-    api.Contracts.Futures.TXF["TXFR1"],
-    quote_type = sj.constant.QuoteType.Tick,
-    version = sj.constant.QuoteVersion.v1,
-)
+api.quote.set_on_tick_fop_v1_callback(quote_callback)
+api.quote.set_on_tick_stk_v1_callback(quote_callback)
 
+api.quote.subscribe(api.Contracts.Stocks["2330"], 
+                    quote_type="tick",
+                    version=sj.constant.QuoteVersion.v1,
+                    )
+# api.quote.subscribe(
+#     api.Contracts.Futures.TXF["TXFR1"],
+#     quote_type = sj.constant.QuoteType.Tick,
+#     version = sj.constant.QuoteVersion.v1,
+# )
 
+input("Press any key to continue...")
 api.logout()
