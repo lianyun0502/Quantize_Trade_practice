@@ -3,6 +3,7 @@ import shioaji as sj
 from shioaji import TickFOPv1, Exchange, TickSTKv1
 import os
 from dotenv import load_dotenv #從dotenv模組中匯入load_dotenv這個function
+import pandas as pd
 
 load_dotenv() #讀取設定檔中的內容至環境變數
 
@@ -39,15 +40,23 @@ def quote_callback(exchange:Exchange, tick:TickSTKv1):
 api.quote.set_on_tick_fop_v1_callback(quote_callback)
 api.quote.set_on_tick_stk_v1_callback(quote_callback)
 
-api.quote.subscribe(api.Contracts.Stocks["2330"], 
-                    quote_type="tick",
-                    version=sj.constant.QuoteVersion.v1,
-                    )
+# api.quote.subscribe(api.Contracts.Stocks["2330"], 
+#                     quote_type="tick",
+#                     version=sj.constant.QuoteVersion.v1,
+#                     )
 # api.quote.subscribe(
 #     api.Contracts.Futures.TXF["TXFR1"],
 #     quote_type = sj.constant.QuoteType.Tick,
 #     version = sj.constant.QuoteVersion.v1,
 # )
-
+kbars = api.kbars(
+    api.Contracts.Stocks["3715"], 
+    start="2023-09-26", 
+    end="2023-09-26", 
+    )
+columns = ["Open", "High", "Low", "Close", "Volume", 'Amount','ts']
+df = pd.DataFrame({col: getattr(kbars, col) for col in columns}, index=kbars['ts'])
+df.index = pd.to_datetime(df.index)
+df.to_json('3715.json')
 input("Press any key to continue...")
 api.logout()

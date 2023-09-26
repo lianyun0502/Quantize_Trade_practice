@@ -7,9 +7,10 @@ readme = "README.md"
 packages = [{include = "quantize_trade_practice"}]
 
 [tool.poetry.dependencies]
-python = "^3.9"
+python = ">=3.9,<3.13"
 shioaji = "^1.1.0"
 python-dotenv = "^1.0.0"
+pandas = "^2.1.1"
 
 
 [build-system]
